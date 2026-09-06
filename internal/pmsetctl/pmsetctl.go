@@ -1,3 +1,5 @@
+//go:build darwin
+
 // Package pmsetctl drives /usr/bin/pmset. It is a private detail of the darwin
 // implementation and nothing outside it should import this package.
 //
