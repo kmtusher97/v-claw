@@ -1,5 +1,3 @@
-//go:build darwin
-
 // Command v-claw is the command line face of the app. It reads and writes the same
 // state file the menu bar app uses, so the two stay in step with no extra machinery.
 package main
@@ -9,7 +7,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"strings"
 	"time"
 
 	"github.com/kamrul1157024/v-claw/internal/diag"
@@ -29,8 +26,8 @@ usage:
   v-claw auto                   awake only while on the power adapter
   v-claw off                    change nothing
   v-claw logs [-f]              recent log lines from the app and the helper
-  v-claw lock-reset             forget the virtual lock password
-  v-claw diagnose               full report, including managed-Mac overrides
+  v-claw lock-reset             forget the virtual lock password (macOS only)
+  v-claw diagnose               full report on what is active and why
   v-claw version
 
 The menu bar app picks changes up within a few seconds.
@@ -93,7 +90,7 @@ func openWindow() error {
 		return fmt.Errorf("v-claw does not appear to be running: %w", err)
 	}
 	if s.Stale(time.Now()) {
-		return fmt.Errorf("v-claw is not running; start it from /Applications")
+		return fmt.Errorf("v-claw is not running; start the tray app first")
 	}
 	s.ShowWindow = true
 	if err := state.Save(paths.StateFile(), s); err != nil {
@@ -130,35 +127,6 @@ func showLogs(args []string) error {
 	cmd := exec.Command("/usr/bin/tail", tailArgs...)
 	cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
 	return cmd.Run()
-}
-
-// lockReset forgets the virtual lock password. It is the escape hatch for a forgotten
-// one, and it gives nothing away: the virtual lock is a window, not a security
-// boundary, so quitting v-claw already removes it.
-func lockReset() error {
-	out, err := exec.Command("/usr/bin/security", "delete-generic-password",
-		"-s", "com.vclaw.virtual-lock").CombinedOutput()
-	if err != nil {
-		if strings.Contains(string(out), "could not be found") {
-			fmt.Println("no virtual lock password was set")
-			return nil
-		}
-		return fmt.Errorf("could not clear the password: %s", out)
-	}
-
-	// Leaving the policy pointing at a password that no longer exists would make the
-	// lock fail open silently. Say so, and move it back to the honest setting.
-	s, lerr := state.Load(paths.StateFile())
-	if lerr == nil && s.Lock.Policy == state.PolicyPassword {
-		s.Lock.Policy = state.PolicyNone
-		if err := state.Save(paths.StateFile(), s); err != nil {
-			return err
-		}
-		fmt.Println("password cleared; the virtual lock is back to \"any key unlocks\"")
-		return nil
-	}
-	fmt.Println("password cleared")
-	return nil
 }
 
 func setMode(m state.Mode, d time.Duration) error {
@@ -206,7 +174,7 @@ func status() error {
 		fmt.Printf("expires   %s\n", time.Until(*s.ExpiresAt).Round(time.Second))
 	}
 	if s.Stale(time.Now()) {
-		fmt.Println("warning   the app is not running; the daemon has released")
+		fmt.Println("warning   the app is not running; nothing is being held awake")
 	}
 	return nil
 }
