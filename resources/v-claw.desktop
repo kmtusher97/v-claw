@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=v-claw
+Comment=Keep the laptop awake while it is plugged in
+Exec=@EXEC@ --background
+Terminal=false
+X-GNOME-Autostart-enabled=true
