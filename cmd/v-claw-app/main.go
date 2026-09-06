@@ -1,10 +1,9 @@
-//go:build darwin
-
 // Command v-claw-app is the menu bar app.
 //
-// It runs unprivileged. It holds the OS awake-assertions itself, and it writes the
-// state file that the privileged daemon reads for the one setting that needs root.
-// Everything here works with no admin rights at all.
+// It runs unprivileged. It holds the OS awake-assertions itself, and on macOS it writes
+// the state file that the privileged daemon reads for the one setting that needs root.
+// Linux needs no such daemon at all — see internal/power/power_linux.go. Everything
+// here works with no admin rights, on either platform.
 package main
 
 import (

@@ -1,5 +1,3 @@
-//go:build darwin
-
 package main
 
 import (
@@ -106,6 +104,13 @@ func (a *app) buildMenu() {
 			it.Disable()
 		}
 		openWin.SetTitle("Settings… (helper missing)")
+	}
+
+	// The virtual lock does not exist on every platform yet. Grey the item out rather
+	// than let it look broken when clicked.
+	if !lockSupported {
+		m.lockNow.Disable()
+		m.lockNow.SetTitle("Lock screen now (not available yet)")
 	}
 
 	a.menu = m
