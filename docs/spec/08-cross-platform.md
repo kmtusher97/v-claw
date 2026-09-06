@@ -149,13 +149,10 @@ Do not generalise these. They have no meaning elsewhere.
 | Release | Platform | Notes |
 |---|---|---|
 | v1 | macOS | Everything in this spec |
-| v2 | Linux | logind. Likely simpler than macOS. Lock screen delegated to the desktop |
+| v2 | Linux | **Done.** logind, as predicted — simpler than macOS, no privileged daemon at all. See [09-linux.md](09-linux.md) for what actually shipped and what was left out (the virtual lock, mainly). |
 | v3 | Windows | `SetThreadExecutionState` plus a power-scheme edit |
 
-Do not build Linux or Windows stubs in v1. Build the **interface** in v1, and one
-implementation behind it. An empty `power_linux.go` that returns `ErrUnsupported` is
-enough to prove the boundary is real.
-
-Add `GOOS=linux go build ./...` and `GOOS=windows go build ./...` to CI from the first
-commit. They will fail on cgo until the stubs exist, which is the point: the failure is
-the reminder.
+`GOOS=linux go build ./...` now builds the real implementation, not just the stub
+packages: see `make lint`. `GOOS=windows go build ./...` still only compiles
+`internal/paths`, `internal/power`, and `internal/state` against their stubs, for the
+same reason it always did — nothing above those stubs has a Windows implementation yet.

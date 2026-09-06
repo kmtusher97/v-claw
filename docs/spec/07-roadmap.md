@@ -140,7 +140,6 @@ Full list in [04-virtual-lock.md](04-virtual-lock.md). The two that catch the mo
 
 | Item | Why not now |
 |---|---|
-| Linux | v2. logind makes it simpler than macOS. See [08-cross-platform.md](08-cross-platform.md). |
 | Windows | v3. |
 | Thermal guard from SMC temperature | Needs private APIs. The timed override and the watchdog cover the same risk. See [03-safety.md](03-safety.md). |
 | Notarized prebuilt releases | Needs a paid Developer ID. Build from source works today. |

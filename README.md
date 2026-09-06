@@ -6,7 +6,7 @@
 
 <p align="center">
   <img alt="macOS" src="https://img.shields.io/badge/macOS-supported-success">
-  <img alt="linux" src="https://img.shields.io/badge/Linux-planned-lightgrey">
+  <img alt="linux" src="https://img.shields.io/badge/Linux-supported-success">
   <img alt="windows" src="https://img.shields.io/badge/Windows-planned-lightgrey">
   <img alt="licence" src="https://img.shields.io/badge/licence-MIT-blue">
   <img alt="status" src="https://img.shields.io/badge/status-alpha-orange">
@@ -33,8 +33,8 @@ v-claw is that, in software. No plastic required.
 
 ## What it does
 
-Close the lid and your Mac sleeps. Leave it idle and the screen locks. That is usually
-what you want — but not when something long-running is on the machine.
+Close the lid and your laptop sleeps. Leave it idle and the screen locks. That is
+usually what you want — but not when something long-running is on the machine.
 
 v-claw keeps it awake while the power adapter is connected, and lets go the moment you
 unplug. The claw in your menu bar is green whenever it is holding.
@@ -46,6 +46,8 @@ unplug. The claw in your menu bar is green whenever it is holding.
 - **Privacy screen** — cover the display while you step away, without sleeping
 
 ## Install
+
+### macOS
 
 macOS 13 or later. You need [Go](https://go.dev/dl/) and Xcode Command Line Tools
 (`xcode-select --install`). Xcode itself is not needed.
@@ -63,6 +65,21 @@ app ever asks again.
 guarantee the lid-close part. Add it later with `sudo make install-daemon`.
 
 Want to see what runs as root before agreeing? `make explain` prints it.
+
+### Linux
+
+A systemd-based distribution. You need [Go](https://go.dev/dl/), and `zenity` if you
+want the settings window (the tray menu works without it).
+
+```sh
+git clone https://github.com/kamrul1157024/v-claw
+cd v-claw
+make install
+```
+
+No password prompt, ever: lid-close blocking uses `systemd-logind`'s `Inhibit` call,
+which needs no privilege at all. See [docs/spec/09-linux.md](docs/spec/09-linux.md) for
+what that means and what is not built yet — the virtual lock, mainly.
 
 ## Using it
 
@@ -103,6 +120,12 @@ wrong. Prefer **Awake for ▸** over **Always awake** when you can.
 
 ## The privacy screen
 
+> [!NOTE]
+> macOS only for now. There is no single mechanism that shields the screen the same way
+> across X11, Wayland, GNOME and KDE, and Wayland does not let a client cover the screen
+> at all — see [docs/spec/09-linux.md](docs/spec/09-linux.md). Everything else in this
+> README works on both platforms.
+
 You can cover your displays while you step away, without letting the machine sleep.
 
 > [!CAUTION]
@@ -138,7 +161,7 @@ Puts your power settings back the way they were.
 
 - [Documentation](docs/spec/) — how it works, and why it is built this way
 - [AGENTS.md](AGENTS.md) — rules for anyone, human or AI, changing this code
-- Linux and Windows are planned; the groundwork is already in place
+- Windows is planned; the groundwork is already in place
 
 ## Licence
 

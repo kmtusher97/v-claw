@@ -3,7 +3,7 @@
 A menu bar app that stops the laptop sleeping and locking while it runs on the power
 adapter, and that can hold a virtual lock screen while you are away.
 
-macOS is the only platform implemented today. Linux and Windows are planned, and
+macOS and Linux are implemented. Windows is planned, and
 [08-cross-platform.md](08-cross-platform.md) covers what that already requires of the
 current code.
 
@@ -21,6 +21,7 @@ every later decision.
 | [06-build-and-install.md](06-build-and-install.md) | Repo layout, Makefile, and the privilege split |
 | [07-roadmap.md](07-roadmap.md) | Build order and verification |
 | [08-cross-platform.md](08-cross-platform.md) | Linux and Windows, and what they force into v1 |
+| [09-linux.md](09-linux.md) | What shipped for Linux, measured against the plan in 08 |
 
 ## The three ideas
 
@@ -37,7 +38,7 @@ reported after it is read back from the system.
 
 ## Status
 
-Implemented on macOS. Linux and Windows to follow.
+Implemented on macOS and Linux. Windows to follow.
 
 The platform boundary already exists in `internal/power` and `internal/paths`, and
 cross-compilation in CI keeps it honest: nothing above `internal/power` may import `C`.
