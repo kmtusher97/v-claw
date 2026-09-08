@@ -78,6 +78,15 @@ func onReady() {
 	a.applyDock()
 
 	if !*background {
+		// sync() itself runs inside run(), started just below, so onAC would
+		// otherwise still be its zero value here. On darwin that self-heals within
+		// milliseconds because the running helper window can be pushed a corrected
+		// state; a Linux settings window cannot be pushed to once open (see
+		// internal/ui/ui_linux.go), so it would otherwise show "on battery" for its
+		// entire time on screen regardless of what is actually plugged in.
+		if onAC, err := a.pow.OnAC(); err == nil {
+			a.onAC = onAC
+		}
 		a.openWindow()
 	}
 
