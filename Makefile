@@ -145,7 +145,11 @@ ifeq ($(UNAME),Darwin)
 else
 	@mkdir -p $(BINDIR) $(dir $(AUTOSTART))
 	@# Stop the running copy before replacing its binary, same reason as on macOS.
-	@pkill -f "$(BINDIR)/v-claw-app" 2>/dev/null || true
+	@# Anchored, and pgrep+kill rather than pkill: pkill -f (or an unanchored
+	@# pgrep -f) matches a process's whole command line, and make invokes this very
+	@# recipe line as `sh -c "<this text>"` — whose own argv contains this path too,
+	@# so an unanchored match kills that shell and aborts the recipe with itself.
+	@pgrep -f "^$(BINDIR)/v-claw-app" | xargs -r kill 2>/dev/null || true
 	@sleep 1
 	cp $(BUILD)/v-claw-app $(BUILD)/v-claw $(BINDIR)/
 	sed -e "s|@EXEC@|$(BINDIR)/v-claw-app|g" resources/v-claw.desktop > $(AUTOSTART)
@@ -170,7 +174,7 @@ ifeq ($(UNAME),Darwin)
 	@sudo $(MAKE) uninstall-daemon || \
 		echo "helper left in place; remove it with: sudo make uninstall-daemon"
 else
-	-@pkill -f "$(BINDIR)/v-claw-app" 2>/dev/null
+	-@pgrep -f "^$(BINDIR)/v-claw-app" | xargs -r kill 2>/dev/null
 	rm -f $(AUTOSTART) $(BINDIR)/v-claw-app $(BINDIR)/v-claw
 	@echo "v-claw removed. Nothing was ever installed with admin rights to undo."
 endif
